@@ -1,8 +1,9 @@
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 # @Author: KevinMidboe
 # @Date:   2017-08-25 12:33:01
 # @Last Modified by:   KevinMidboe
-# @Last Modified time: 2017-08-25 17:35:33
+# @Last Modified time: 2017-08-25 17:38:02
 
 from stepper import Stepper
 
