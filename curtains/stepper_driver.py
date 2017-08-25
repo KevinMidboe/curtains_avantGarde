@@ -1,3 +1,10 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+# @Author: KevinMidboe
+# @Date:   2017-08-25 16:04:49
+# @Last Modified by:   KevinMidboe
+# @Last Modified time: 2017-08-25 16:51:30
+
 from time import sleep
 import RPi.GPIO as gpio
 
@@ -6,10 +13,6 @@ class Stepper:
 	# Pins = [pin1, pin2, pin3, pin4]
 	def __init__(self, pins):
 		self.pins = pins
-		self.pin1 = self.pins[0]
-		self.pin2 = self.pins[1]
-		self.pin3 = self.pins[2]
-		self.pin4 = self.pins[3]
 
 		gpio.setmode(gpio.BCM)
 
@@ -21,17 +24,18 @@ class Stepper:
 	def cleanGPIO(self):
 		gpio.cleanup()
 
+	def rotate(l, n=1):
+		return l[n:] + l[:n]
+
+	def togglePin(pins, waitTime=0.001):
+		for pin in pins:
+			gpio.output(pin, True)
+			sleep(waitTime)
+
+		for pin in pins:
+			gpio.ouput(pin, False)
+
 	def step(self, rotations, dir, speed=1, forever=False):
-		StepSequence = range(0, 8)
-		StepSequence[0] = [GpioPins[0]]
-		StepSequence[1] = [GpioPins[0], GpioPins[1]]
-		StepSequence[2] = [GpioPins[1]]
-		StepSequence[3] = [GpioPins[1], GpioPins[2]]
-		StepSequence[4] = [GpioPins[2]]
-		StepSequence[5] = [GpioPins[2], GpioPins[3]]
-		StepSequence[6] = [GpioPins[3]]
-		StepSequence[7] = [GpioPins[3], GpioPins[0]]
-		
 		for pin in self.pins:
 			gpio.output(pin, True)
 
@@ -43,21 +47,19 @@ class Stepper:
 			return False
 
 		steps = rotations * 500
-		waitTime = 0.000001/speed
+		pinState = self.pins
 
 		while steps > 0:
-			for pinList in stepSequence: 
-				for pin in self.pins:
-					if pin in pinList: 
-						GPIO.output(pin, True)
-					else:
-						GPIO.output(pin, False)
-				sleep(waitTime)
+			for i in range(2):
+				self.togglePin([pinState[0]])
+				self.togglePin([pinState[0], pinState[1]])
+
+				pinState = self.rotate(pinState)
 
 			steps -=1
 
 
 if __name__ == '__main__':
 	pins = [17, 18, 27, 22]
-	stepper = new Stepper(pins)
+	stepper = Stepper(pins)
 	stepper.step(2, 'left')
