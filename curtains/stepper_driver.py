@@ -3,7 +3,7 @@
 # @Author: KevinMidboe
 # @Date:   2017-08-25 16:04:49
 # @Last Modified by:   KevinMidboe
-# @Last Modified time: 2017-08-25 16:51:30
+# @Last Modified time: 2017-08-25 17:34:07
 
 from time import sleep
 import RPi.GPIO as gpio
@@ -24,16 +24,17 @@ class Stepper:
 	def cleanGPIO(self):
 		gpio.cleanup()
 
-	def rotate(l, n=1):
+	def rotate(self, l, n=1):
 		return l[n:] + l[:n]
 
-	def togglePin(pins, waitTime=0.001):
-		for pin in pins:
-			gpio.output(pin, True)
-			sleep(waitTime)
+	def togglePin(self, pins):
+		for pin in self.pins:
+			if pin in pins:
+				gpio.output(pin, True)
+			else:
+				gpio.output(pin, False)
 
-		for pin in pins:
-			gpio.ouput(pin, False)
+		sleep(0.001)
 
 	def step(self, rotations, dir, speed=1, forever=False):
 		for pin in self.pins:
@@ -53,8 +54,9 @@ class Stepper:
 			for i in range(2):
 				self.togglePin([pinState[0]])
 				self.togglePin([pinState[0], pinState[1]])
-
+			
 				pinState = self.rotate(pinState)
+
 
 			steps -=1
 
@@ -62,4 +64,5 @@ class Stepper:
 if __name__ == '__main__':
 	pins = [17, 18, 27, 22]
 	stepper = Stepper(pins)
-	stepper.step(2, 'left')
+	stepper.step(10, 'left')
+	stepper.cleanGPIO()
